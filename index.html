@@ -3,36 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Słowo Boże na dziś</title>
+    <title>Całe Pismo Święte - Werset Dnia</title>
     <style>
-        body {
-            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Georgia', serif;
-        }
-        .card {
-            background: #fdfaf3;
-            padding: 40px;
-            border: 3px double #d4af37;
-            border-radius: 15px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            text-align: center;
-            max-width: 550px;
-            width: 90%;
-        }
+        body { background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Georgia', serif; }
+        .card { background: #fdfaf3; padding: 40px; border: 3px double #d4af37; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.5); text-align: center; max-width: 550px; width: 90%; }
         .cross { color: #d4af37; font-size: 30px; margin-bottom: 10px; }
-        h1 { font-size: 1.8rem; text-transform: uppercase; color: #8b4513; border-bottom: 1px solid #d4af37; padding-bottom: 15px; }
-        #verse-text { font-size: 1.5rem; line-height: 1.8; font-style: italic; margin: 30px 0; color: #4a3728; }
-        #verse-ref { font-weight: bold; font-size: 1.2rem; color: #d4af37; margin-bottom: 30px; }
-        button {
-            background: linear-gradient(145deg, #d4af37, #b8860b);
-            color: white; border: none; padding: 15px 45px; font-size: 1.1rem;
-            font-weight: bold; text-transform: uppercase; border-radius: 5px; cursor: pointer;
-        }
+        h1 { font-size: 1.8rem; text-transform: uppercase; color: #8b4513; border-bottom: 1px solid #d4af37; padding-bottom: 15px; margin-top: 0; }
+        #verse-text { font-size: 1.4rem; line-height: 1.7; font-style: italic; margin: 30px 0; color: #4a3728; min-height: 100px; }
+        #verse-ref { font-weight: bold; font-size: 1.1rem; color: #d4af37; margin-bottom: 30px; }
+        button { background: linear-gradient(145deg, #d4af37, #b8860b); color: white; border: none; padding: 15px 45px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-radius: 5px; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
         .info-box { display: none; background: #f4eee1; border: 1px solid #d4af37; padding: 20px; margin-top: 20px; border-radius: 8px; color: #5d4037; }
     </style>
 </head>
@@ -40,40 +20,70 @@
 <div class="card">
     <div class="cross">✙</div>
     <h1>Słowo Pańskie</h1>
-    <div id="verse-text">Przygotuj serce na Słowo Boże...</div>
+    <div id="verse-text">Pobieranie wersetu z Pisma Świętego...</div>
     <div id="verse-ref"></div>
-    <button id="draw-btn" onclick="fetchVerse()">Odbierz Słowo na dziś</button>
+    <button id="draw-btn" onclick="pobierzWerset()">Wylosuj z całej Biblii</button>
     <div id="next-info" class="info-box">
-        <strong>Twoje Słowo zostało już wybrane.</strong><br>
-        Następny werset będzie dostępny jutro. Niech Pan Ci błogosławi!
+        <strong>Twoje Słowo na dziś zostało wybrane.</strong><br>
+        Następny werset z Pisma Świętego będzie dostępny jutro.
     </div>
 </div>
+
 <script>
-    async function fetchVerse() {
+    // Adres do kompletnej Biblii w formacie JSON (całe Pismo Święte)
+    const urlBiblii = 'https://raw.githubusercontent.com/pajacyk/biblia-json/master/biblia.json';
+
+    async function pobierzWerset() {
         const btn = document.getElementById('draw-btn');
-        btn.innerText = "Pobieranie...";
+        const textDiv = document.getElementById('verse-text');
         btn.disabled = true;
+        btn.innerText = "Szukanie w Piśmie...";
+
         try {
-            const res = await fetch('https://raw.githubusercontent.com/pajacyk/biblia-json/master/biblia.json');
+            const res = await fetch(urlBiblii);
+            if (!res.ok) throw new Error();
             const biblia = await res.json();
+
+            // Losowanie z całej Biblii:
             const ksiega = biblia[Math.floor(Math.random() * biblia.length)];
             const rIdx = Math.floor(Math.random() * ksiega.chapters.length);
-            const wIdx = Math.floor(Math.random() * ksiega.chapters[rIdx].length);
-            const wersetData = { t: ksiega.chapters[rIdx][wIdx], r: ksiega.name + " " + (rIdx + 1) + ", " + (wIdx + 1) };
-            localStorage.setItem('v_date', new Date().toDateString());
-            localStorage.setItem('v_data', JSON.stringify(wersetData));
-            render(wersetData);
-        } catch (e) { alert("Błąd połączenia."); btn.disabled = false; btn.innerText = "Spróbuj ponownie"; }
+            const rozdzial = ksiega.chapters[rIdx];
+            const wIdx = Math.floor(Math.random() * rozdzial.length);
+            const wersetTekst = rozdzial[wIdx];
+
+            const wersetData = {
+                t: wersetTekst,
+                r: ksiega.name + " " + (rIdx + 1) + ", " + (wIdx + 1)
+            };
+
+            // Zapisywanie daty i wersetu
+            localStorage.setItem('biblia_data', new Date().toDateString());
+            localStorage.setItem('biblia_werset', JSON.stringify(wersetData));
+
+            wyswietl(wersetData);
+        } catch (e) {
+            textDiv.innerText = "Nie udało się połączyć z bazą Biblii. Sprawdź połączenie z internetem i spróbuj ponownie.";
+            btn.disabled = false;
+            btn.innerText = "Spróbuj ponownie";
+        }
     }
-    function render(d) {
+
+    function wyswietl(d) {
         document.getElementById('verse-text').innerText = "„" + d.t + "”";
         document.getElementById('verse-ref').innerText = d.r;
         document.getElementById('draw-btn').style.display = 'none';
         document.getElementById('next-info').style.display = 'block';
     }
+
     window.onload = function() {
-        if (localStorage.getItem('v_date') === new Date().toDateString()) {
-            render(JSON.parse(localStorage.getItem('v_data')));
+        const zapisanaData = localStorage.getItem('biblia_data');
+        const dzis = new Date().toDateString();
+
+        if (zapisanaData === dzis) {
+            const d = JSON.parse(localStorage.getItem('biblia_werset'));
+            wyswietl(d);
+        } else {
+            document.getElementById('verse-text').innerText = "Przygotuj swoje serce na dzisiejsze Słowo...";
         }
     };
 </script>
