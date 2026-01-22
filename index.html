@@ -5,101 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Słowo Boże</title>
    <style>
-    body { 
-        background-color: #f7f3f0; /* Bardzo łagodny beż, nie męczy oczu */
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        min-height: 100vh; 
-        margin: 0; 
-        font-family: sans-serif; /* Najbardziej czytelna czcionka */
-        color: #332b26; 
+    body {
+        background-color: #1a1a2e; /* Bardzo ciemny granat / prawie czerń */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Bardzo czytelna czcionka */
+        color: #f0f0f0; /* Jasny tekst na ciemnym tle */
     }
 
-    .card { 
-        background: white; 
-        padding: 40px 30px; 
-        border-radius: 8px; /* Lekkie zaokrąglenie, nowocześniej */
-        border-top: 6px solid #d4af37; /* Złoty akcent tylko na górze */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-        text-align: center; 
-        max-width: 500px; 
-        width: 85%; 
+    .card {
+        background: #2a2a4a; /* Nieco jaśniejszy odcień granatu dla karty */
+        padding: 45px 35px;
+        border-radius: 12px; /* Eleganckie zaokrąglenie */
+        border: 2px solid #d4af37; /* Cienka złota ramka */
+        box-shadow: 0 15px 40px rgba(0,0,0,0.4); /* Głęboki cień */
+        text-align: center;
+        max-width: 550px;
+        width: 88%;
+        position: relative;
     }
 
     .cross {
-        font-size: 30px;
-        color: #d4af37;
+        font-family: 'Times New Roman', serif; /* Klasyczna czcionka dla krzyża */
+        font-size: 48px; /* Duży krzyż */
+        color: #d4af37; /* Złoty kolor */
         margin-bottom: 10px;
+        display: block;
+        text-shadow: 0 0 10px rgba(212,175,55,0.6); /* Delikatna poświata */
     }
 
     .christ-header {
         text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 0.9rem;
-        color: #8b4513;
+        letter-spacing: 3px;
+        font-size: 1rem;
+        color: #f0f0f0; /* Jasny tekst */
+        margin-bottom: 30px;
+        font-weight: 600; /* Pogrubiony */
+    }
+
+    h1 {
+        font-size: 1.6rem;
         margin-bottom: 25px;
-        font-weight: bold;
+        color: #d4af37; /* Złoty nagłówek */
     }
 
-    h1 { 
-        font-size: 1.3rem; 
-        margin-bottom: 20px;
-        color: #5d4037;
+    #v-text {
+        font-size: 1.5rem;
+        line-height: 1.6;
+        margin: 25px 0;
+        color: #ffffff; /* Czysta biel dla tekstu wersetu */
+        font-weight: 300; /* Lekka czcionka, dobrze czytelna */
+        font-style: italic; /* Delikatna kursywa dla Słowa */
     }
 
-    #v-text { 
-        font-size: 1.4rem; /* Duża, wyraźna litera */
-        line-height: 1.5; 
-        margin: 20px 0; 
-        color: #1a1a1a; /* Prawie czarny dla najlepszej czytelności */
-        font-weight: 400;
-    }
-
-    #v-ref { 
+    #v-ref {
         display: block;
-        font-weight: bold; 
-        color: #d4af37; 
-        margin-top: 15px;
+        font-weight: bold;
+        color: #b8860b; /* Ciemniejsze złoto dla referencji */
+        margin-top: 20px;
         font-size: 1.1rem;
     }
 
-    button { 
-        background: #8b4513; 
-        color: white; 
-        border: none; 
-        padding: 15px 30px; 
-        font-size: 1rem; 
-        border-radius: 5px;
-        cursor: pointer; 
-        margin-top: 25px;
+    button {
+        background: #d4af37; /* Złoty przycisk */
+        color: #1a1a2e; /* Ciemny tekst na przycisku */
+        border: none;
+        padding: 16px 35px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 35px;
         font-weight: bold;
-        transition: 0.2s;
+        transition: background 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 5px 15px rgba(212,175,55,0.4);
     }
 
-    button:hover { 
-        background: #d4af37; 
+    button:hover {
+        background: #ffdb58; /* Jaśniejsze złoto przy najechaniu */
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212,175,55,0.6);
     }
 
     .footer-msg {
-        margin-top: 20px;
-        font-size: 0.85rem;
-        color: #a09080;
+        margin-top: 25px;
+        font-size: 0.9rem;
+        color: #aaaaaa; /* Delikatny szary dla informacji */
         font-style: italic;
     }
 </style>
 
 <div class="card">
     <div class="cross">†</div>
-    <div class="christ-header">Jezus Chrystus jest Panem</div>
-    
-    <div id="v-text">Przyjmij Słowo Boże na dzisiejszy dzień.</div>
+    <div class="christ-header">Jezus Chrystus Królem Chwały</div>
+
+    <div id="v-text">Przyjmij dzisiaj Słowo od Pana.</div>
     <div id="v-ref"></div>
-    
-    <button id="btn" onclick="losuj()">Odbierz Słowo</button>
-    
+
+    <button id="btn" onclick="losuj()">Otwórz Pismo Święte</button>
+
     <div id="info" style="display:none;" class="footer-msg">
-        Niech to Słowo Cię dzisiaj umacnia.
+        Niech Słowo Boże będzie z Tobą przez cały dzień.
     </div>
 </div>
 
