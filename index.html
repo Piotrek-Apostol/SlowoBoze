@@ -3,16 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Całe Pismo Święte</title>
+    <title>Słowo Boże na każdy dzień</title>
     <style>
-        body { background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Georgia', serif; }
-        .card { background: #fdfaf3; padding: 40px; border: 3px double #d4af37; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.5); text-align: center; max-width: 550px; width: 90%; }
+        body { 
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            font-family: 'Georgia', serif; 
+        }
+        .card { 
+            background: #fdfaf3; 
+            padding: 40px; 
+            border: 3px double #d4af37; 
+            border-radius: 15px; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); 
+            text-align: center; 
+            max-width: 550px; 
+            width: 90%; 
+        }
         .cross { color: #d4af37; font-size: 30px; margin-bottom: 10px; }
         h1 { font-size: 1.8rem; text-transform: uppercase; color: #8b4513; border-bottom: 1px solid #d4af37; padding-bottom: 15px; margin-top: 0; }
-        #verse-text { font-size: 1.4rem; line-height: 1.7; font-style: italic; margin: 30px 0; color: #4a3728; min-height: 100px; }
-        #verse-ref { font-weight: bold; font-size: 1.1rem; color: #d4af37; margin-bottom: 30px; }
-        button { background: linear-gradient(145deg, #d4af37, #b8860b); color: white; border: none; padding: 15px 45px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-radius: 5px; cursor: pointer; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        #verse-text { font-size: 1.5rem; line-height: 1.8; font-style: italic; margin: 30px 0; color: #4a3728; min-height: 100px; }
+        #verse-ref { font-weight: bold; font-size: 1.2rem; color: #d4af37; margin-bottom: 30px; }
+        button { 
+            background: linear-gradient(145deg, #d4af37, #b8860b); 
+            color: white; 
+            border: none; 
+            padding: 15px 45px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); }
         .info-box { display: none; background: #f4eee1; border: 1px solid #d4af37; padding: 20px; margin-top: 20px; border-radius: 8px; color: #5d4037; }
     </style>
 </head>
@@ -20,73 +48,346 @@
 <div class="card">
     <div class="cross">✙</div>
     <h1>Słowo Pańskie</h1>
-    <div id="verse-text">Czekaj na Słowo Boże...</div>
+    <div id="verse-text">Przygotuj serce na Słowo Boże...</div>
     <div id="verse-ref"></div>
-    <button id="draw-btn" onclick="fetchVerse()">Odbierz Słowo na dziś</button>
+    <button id="draw-btn" onclick="losuj()">Odbierz Słowo na dziś</button>
     <div id="next-info" class="info-box">
-        <strong>Słowo na dziś zostało już wybrane.</strong><br>
-        Następny werset z Pisma Świętego będzie dostępny jutro.
+        <strong>Twoje Słowo na dziś zostało wybrane.</strong><br>
+        Następny werset będzie dostępny jutro. Niech Pan Ci błogosławi!
     </div>
 </div>
 
 <script>
-    // Lista ksiąg i liczba rozdziałów, aby losować z całej Biblii
-    const ksiegi = [
-        {n: "Rdz", r: 50}, {n: "Wj", r: 40}, {n: "Kpł", r: 27}, {n: "Lb", r: 36}, {n: "Pwt", r: 34},
-        {n: "Joz", r: 24}, {n: "Sdz", r: 21}, {n: "Rt", r: 4}, {n: "1Sm", r: 31}, {n: "2Sm", r: 24},
-        {n: "Ps", r: 150}, {n: "Iz", r: 66}, {n: "Mt", r: 28}, {n: "Mk", r: 16}, {n: "Łk", r: 24},
-        {n: "J", r: 21}, {n: "Dz", r: 28}, {n: "Rz", r: 16}, {n: "1Kor", r: 16}, {n: "Ap", r: 22}
-    ];
-
-    async function fetchVerse() {
-        const btn = document.getElementById('draw-btn');
-        btn.innerText = "Pobieranie...";
-        btn.disabled = true;
-
-        // Losujemy księgę i rozdział
-        const k = ksiegi[Math.floor(Math.random() * ksiegi.length)];
-        const r = Math.floor(Math.random() * k.r) + 1;
-
-        try {
-            // Korzystamy z API biblijnego (Biblia Tysiąclecia/Poznańska)
-            const response = await fetch(`https://bible-api.com/${k.n}+${r}?translation=almeida`); 
-            // Uwaga: Bible-api domyślnie ma angielski, ale te wersety są uniwersalne.
-            // Jeśli chcesz TYLKO polskie, najlepiej użyć bazy wbudowanej, ale spróbujmy tego:
-            
-            const data = await response.json();
-            const werset = data.verses[Math.floor(Math.random() * data.verses.length)];
-
-            const wersetData = {
-                t: werset.text.trim(),
-                r: data.reference
-            };
-
-            zapisz(wersetData);
-        } catch (e) {
-            // Jeśli internet znowu zablokuje, używamy zapasowego wersetu, żeby nie było błędu
-            const zapas = {t: "Nie lękaj się, bo Ja jestem z tobą.", r: "Izajasza 41, 10"};
-            zapisz(zapas);
-        }
-    }
-
-    function zapisz(d) {
-        localStorage.setItem('v_date', new Date().toDateString());
-        localStorage.setItem('v_data', JSON.stringify(d));
-        wyswietl(d);
-    }
-
-    function wyswietl(d) {
-        document.getElementById('verse-text').innerText = "„" + d.t + "”";
-        document.getElementById('verse-ref').innerText = d.r;
-        document.getElementById('draw-btn').style.display = 'none';
-        document.getElementById('next-info').style.display = 'block';
-    }
-
-    window.onload = function() {
-        if (localStorage.getItem('v_date') === new Date().toDateString()) {
-            wyswietl(JSON.parse(localStorage.getItem('v_data')));
-        }
-    };
-</script>
-</body>
-</html>
+    const baza = [
+        {t: "Pan jest moim pasterzem, nie brak mi niczego.", r: "Psalm 23, 1"},
+        {t: "Wszystko mogę w Tym, który mnie umacnia.", r: "Filipian 4, 13"},
+        {t: "Bóg jest miłością: kto trwa w miłości, trwa w Bogu.", r: "1 Jana 4, 16"},
+        {t: "Nie lękaj się, bo Ja jestem z tobą.", r: "Izajasza 41, 10"},
+        {t: "Twoje słowo jest lampą dla moich stóp.", r: "Psalm 119, 105"},
+        {t: "Z całego serca Panu zaufaj, nie polegaj na swoim rozsądku.", r: "Przysłów 3, 5"},
+        {t: "Przyjdźcie do Mnie wszyscy, którzy utrudzeni jesteście.", r: "Mateusza 11, 28"},
+        {t: "A oto Ja jestem z wami przez wszystkie dni.", r: "Mateusza 28, 20"},
+        {t: "Pokój zostawiam wam, pokój mój daję wam.", r: "Jana 14, 27"},
+        {t: "Szukajcie wpierw Królestwa Bożego.", r: "Mateusza 6, 33"},
+        {t: "Błogosławieni czystego serca, albowiem oni Boga oglądać będą.", r: "Mateusza 5, 8"},
+        {t: "Wiara zaś jest poręką tych dóbr, których się spodziewamy.", r: "Hebrajczyków 11, 1"},
+        {t: "Jeśli Bóg z nami, któż przeciwko nam?", r: "Rzymian 8, 31"},
+        {t: "Wszystkie wasze troski przerzućcie na Niego.", r: "1 Piotra 5, 7"},
+        {t: "Miłość cierpliwa jest, łaskawa jest.", r: "1 Koryntian 13, 4"},
+        {t: "Nic nie jest niemożliwe dla Boga.", r: "Łukasza 1, 37"},
+        {t: "Pan światłem i zbawieniem moim: kogóż mam się lękać?", r: "Psalm 27, 1"},
+        {t: "Serce radosne czyni twarz pogodną.", r: "Przysłów 15, 13"},
+        {t: "Podnieś mnie, Panie, a będę uratowany.", r: "Jeremiasza 17, 14"},
+        {t: "Łaska Pana Jezusa niech będzie z wami wszystkimi.", r: "Apokalipsa 22, 21"},
+        {t: "Wy jesteście światłością świata.", r: "Mateusza 5, 14"},
+        {t: "U ciebie jest źródło życia.", r: "Psalm 36, 10"},
+        {t: "Wszystko, o co prosicie w modlitwie, stanie się wam.", r: "Marka 11, 24"},
+        {t: "Bóg mój wypełni każdą waszą potrzebę.", r: "Filipian 4, 19"},
+        {t: "Pan moją mocą i pieśnią moją.", r: "Wyjścia 15, 2"},
+        {t: "Albowiem tak Bóg umiłował świat, że Syna swego Jednorodzonego dał.", r: "Jana 3, 16"},
+        {t: "Wszystko, co czynicie, z serca czyńcie, jak dla Pana.", r: "Kolosan 3, 23"},
+        {t: "Panie, do kogo pójdziemy? Ty masz słowa życia wiecznego.", r: "Jana 6, 68"},
+        {t: "Wiara rodzi się z tego, co się słyszy.", r: "Rzymian 10, 17"},
+        {t: "A nadzieja zawieść nie może, ponieważ miłość Boża rozlana jest w sercach.", r: "Rzymian 5, 5"},
+        {t: "On sam was umocni, utwierdzi i na stałe postawi.", r: "1 Piotra 5, 10"},
+        {t: "Nie samym chlebem żyje człowiek, lecz każdym słowem Bożym.", r: "Mateusza 4, 4"},
+        {t: "Pan jest blisko wszystkich, którzy Go wzywają w prawdzie.", r: "Psalm 145, 18"},
+        {t: "Spraw, bym rano doznał Twojej łaski, bo w Tobie pokładam nadzieję.", r: "Psalm 143, 8"},
+        {t: "Prawda was wyzwoli.", r: "Jana 8, 32"},
+        {t: "Owocem Ducha jest: miłość, radość, pokój, cierpliwość.", r: "Galatów 5, 22"},
+        {t: "Bądźcie silni i odważni, nie bójcie się.", r: "Pwt 31, 6"},
+        {t: "Serce czyste stwórz we mnie, o Boże.", r: "Psalm 51, 12"},
+        {t: "Lecz ci, co zaufali Panu, odzyskują siły.", r: "Izajasza 40, 31"},
+        {t: "Wszystkie drogi Pana są łaską i wiernością.", r: "Psalm 25, 10"},
+        {t: "Bądźcie dla siebie nawzajem uprzejmi i miłosierni.", r: "Efezjan 4, 32"},
+        {t: "Więcej szczęścia jest w dawaniu aniżeli w braniu.", r: "Dz 20, 35"},
+        {t: "Pan da siłę swojemu ludowi, Pan pobłogosławi swój lud pokojem.", r: "Psalm 29, 11"},
+        {t: "Jezus Chrystus wczoraj i dziś, ten sam także na wieki.", r: "Hebrajczyków 13, 8"},
+        {t: "Powierz Panu swoją drogę i zaufaj Mu: On sam będzie działał.", r: "Psalm 37, 5"},
+        {t: "Bóg jest naszą ucieczką i siłą.", r: "Psalm 46, 2"},
+        {t: "Wszystko jest możliwe dla tego, kto wierzy.", r: "Marka 9, 23"},
+        {t: "To jest moje przykazanie, abyście się wzajemnie miłowali.", r: "Jana 15, 12"},
+        {t: "Dobry jest Pan dla tych, którzy Mu ufają.", r: "Lamentacje 3, 25"},
+        {t: "Światło w ciemności świeci i ciemność go nie ogarnęła.", r: "Jana 1, 5"},
+        {t: "Pan podtrzymuje wszystkich, którzy padają.", r: "Psalm 145, 14"},
+        {t: "Łagodna odpowiedź uśmierza gniew.", r: "Przysłów 15, 1"},
+        {t: "Ja jestem światłością świata. Kto idzie za Mną, nie będzie błądził.", r: "Jana 8, 12"},
+        {t: "Miłujmy się wzajemnie, ponieważ miłość jest z Boga.", r: "1 Jana 4, 7"},
+        {t: "Nic nie zdoła nas odłączyć od miłości Boga.", r: "Rzymian 8, 39"},
+        {t: "Pokój wam!", r: "Jana 20, 19"},
+        {t: "Smakujcie i zobaczcie, jak dobry jest Pan.", r: "Psalm 34, 9"},
+        {t: "Nie daj się zwyciężyć złu, ale zło dobrem zwyciężaj.", r: "Rzymian 12, 21"},
+        {t: "Dziękujcie Panu, bo jest dobry, bo łaska Jego trwa na wieki.", r: "Psalm 136, 1"},
+        {t: "Gdzie są dwaj albo trzej zebrani w imię moje, tam jestem pośród nich.", r: "Mateusza 18, 20"},
+        {t: "A pokój Boży, który przewyższa wszelki umysł, będzie strzegł was.", r: "Filipian 4, 7"},
+        {t: "Pan niech będzie z wami wszystkimi!", r: "2 Tesaloniczan 3, 16"},
+        {t: "W Bogu pokładam nadzieję, nie będę się lękał.", r: "Psalm 56, 12"},
+        {t: "Bóg nie posłał Syna, aby świat potępił, ale by go zbawił.", r: "Jana 3, 17"},
+        {t: "Miej ufność w Panu i czyń dobrze.", r: "Psalm 37, 3"},
+        {t: "Ja jestem krzewem winnym, wy - latoroślami.", r: "Jana 15, 5"},
+        {t: "Wielkie rzeczy uczynił mi Wszechmocny.", r: "Łukasza 1, 49"},
+        {t: "Uczcie się od Mnie, bo jestem cichy i pokorny sercem.", r: "Mateusza 11, 29"},
+        {t: "Pan jest blisko tych, którzy mają serce złamane.", r: "Psalm 34, 19"},
+        {t: "Gdzie jest twój skarb, tam będzie i serce twoje.", r: "Mateusza 6, 21"},
+        {t: "Bóg jest wierny.", r: "1 Koryntian 10, 13"},
+        {t: "Błogosławieni miłosierni, albowiem oni miłosierdzia dostąpią.", r: "Mateusza 5, 7"},
+        {t: "Pan jest moją opoką i twierdzą.", r: "Psalm 18, 3"},
+        {t: "Moje owce słuchają mego głosu.", r: "Jana 10, 27"},
+        {t: "Wielka jest Twoja wierność.", r: "Lamentacje 3, 23"},
+        {t: "Nie zostawię was sierotami.", r: "Jana 14, 18"},
+        {t: "Jeśli trwamy w Nim, przynosimy owoc obfity.", r: "Jana 15, 5"},
+        {t: "Oto czynię wszystko nowe.", r: "Apokalipsa 21, 5"},
+        {t: "W Tobie, Panie, zaufałem, nie zawstydzę się na wieki.", r: "Psalm 31, 2"},
+        {t: "Pan podtrzymuje moją duszę.", r: "Psalm 54, 6"},
+        {t: "Niech cię Pan błogosławi i strzeże.", r: "Liczb 6, 24"},
+        {t: "W ciszy i ufności leży wasza siła.", r: "Izajasza 30, 15"},
+        {t: "Bóg jest sędzią sprawiedliwym.", r: "Psalm 7, 12"},
+        {t: "Uważajcie, aby nikt nie odpłacał złem za złe.", r: "1 Tes 5, 15"},
+        {t: "Głoś słowo, bądź w pogotowiu w porę i nie w porę.", r: "2 Tymoteusza 4, 2"},
+        {t: "Łaska Pana Jezusa Chrystusa niech będzie z wami.", r: "1 Tes 5, 28"},
+        {t: "Bóg jest światłością.", r: "1 Jana 1, 5"},
+        {t: "Każdy, kto wzywa imienia Pańskiego, będzie zbawiony.", r: "Rzymian 10, 13"},
+        {t: "Duch Święty was wszystkiego nauczy.", r: "Jana 14, 26"},
+        {t: "Mamy rzecznika u Ojca - Jezusa Chrystusa.", r: "1 Jana 2, 1"},
+        {t: "Słowo Pana trwa na wieki.", r: "1 Piotra 1, 25"},
+        {t: "Szczęśliwy naród, którego Bogiem jest Pan.", r: "Psalm 33, 12"},
+        {t: "W sercu moim przechowuję Twoje słowo.", r: "Psalm 119, 11"},
+        {t: "Pan niech będzie mocą twoją.", r: "Psalm 28, 7"},
+        {t: "Bóg daje moc zmęczonemu.", r: "Izajasza 40, 29"},
+        {t: "Każda troska wasza niech będzie Mu znana.", r: "Filipian 4, 6"},
+        {t: "Duch daje życie.", r: "Jana 6, 63"},
+        {t: "Pan jest stróżem twoim.", r: "Psalm 121, 5"},
+        {t: "Miłość Boża rozlana jest w sercach naszych.", r: "Rzymian 5, 5"},
+        {t: "Wszystko czyńcie w miłości.", r: "1 Koryntian 16, 14"},
+        {t: "Pan wybawia dusze sług swoich.", r: "Psalm 34, 23"},
+        {t: "Wierny jest Bóg w obietnicach swoich.", r: "Hebrajczyków 10, 23"},
+        {t: "Chwalcie Pana, bo jest dobry.", r: "Psalm 135, 3"},
+        {t: "Jezus jest Panem.", r: "Rzymian 10, 9"},
+        {t: "Sprawiedliwy żyć będzie dzięki wierze.", r: "Galatów 3, 11"},
+        {t: "Bóg jest naszym schronieniem.", r: "Psalm 62, 9"},
+        {t: "Nie lękaj się, tylko wierz.", r: "Marka 5, 36"},
+        {t: "Pan otwiera oczy niewidomym.", r: "Psalm 146, 8"},
+        {t: "Łaska i prawda przyszły przez Jezusa.", r: "Jana 1, 17"},
+        {t: "Gospodzin podnosi skruszonych na duchu.", r: "Psalm 147, 6"},
+        {t: "Słowo Boże jest żywe i skuteczne.", r: "Hebrajczyków 4, 12"},
+        {t: "Pan jest łaskawy i miłosierny.", r: "Psalm 103, 8"},
+        {t: "W Nim żyjemy, poruszamy się i jesteśmy.", r: "Dz 17, 28"},
+        {t: "Twoja łaska lepsza jest niż życie.", r: "Psalm 63, 4"},
+        {t: "Nie samym chlebem żyje człowiek.",
+         {t: "Wszelka troska wasza niech spoczywa na Nim, gdyż Jemu zależy na was.", r: "1 Piotra 5, 7"},
+        {t: "Bądźcie mocni w Panu - siłą Jego potęgi.", r: "Efezjan 6, 10"},
+        {t: "Pan jest moją mocą i tarczą, moje serce Mu zaufało.", r: "Psalm 28, 7"},
+        {t: "Łaską bowiem jesteście zbawieni przez wiarę.", r: "Efezjan 2, 8"},
+        {t: "Nie bój się, bo Ja cię wykupiłem, wezwałem cię po imieniu; tyś moim!", r: "Izajasza 43, 1"},
+        {t: "Niech serce wasze się nie trwoży ani się nie lęka.", r: "Jana 14, 27"},
+        {t: "Pan jest sędzią sprawiedliwym, Bogiem codziennie pałającym gniewem na zło, a miłością do ludzi.", r: "Psalm 7, 12"},
+        {t: "U Boga jest zbawienie moje i chwała, opoka mojej mocy.", r: "Psalm 62, 8"},
+        {t: "Bóg jest wierny i nie pozwoli was kusić ponad to, co potraficie znieść.", r: "1 Koryntian 10, 13"},
+        {t: "Wielbij, duszo moja, Pana, i nie zapominaj o wszystkich Jego dobrodziejstwach.", r: "Psalm 103, 2"},
+        {t: "Módlcie się jeden za drugiego, byście odzyskali zdrowie.", r: "Jakuba 5, 16"},
+        {t: "Bóg mój wypełni każdą waszą potrzebę według swego bogactwa.", r: "Filipian 4, 19"},
+        {t: "Słowo Twoje jest prawdą.", r: "Jana 17, 17"},
+        {t: "Prawdziwych czcicieli Ojciec szuka dla siebie.", r: "Jana 4, 23"},
+        {t: "Duch Święty zstąpi na was i otrzymacie Jego moc.", r: "Dzieje Apostolskie 1, 8"},
+        {t: "Wielki jest Pan i godzien wielkiej chwały.", r: "Psalm 48, 2"},
+        {t: "Wszystko, co żyje, niech chwali Pana!", r: "Psalm 150, 6"},
+        {t: "B
+            {t: "Pan jest światłością moją i zbawieniem moim: kogóż mam się lękać?", r: "Psalm 27, 1"},
+        {t: "Bóg nie jest Bogiem umarłych, lecz żywych; wszyscy bowiem dla Niego żyją.", r: "Łukasza 20, 38"},
+        {t: "Wielkie są dzieła Pańskie, zgłębiać je winni wszyscy, którzy je miłują.", r: "Psalm 111, 2"},
+        {t: "Duch tchnie tam, gdzie chce, i szum jego słyszysz, lecz nie wiesz, skąd przychodzi.", r: "Jana 3, 8"},
+        {t: "Błogosławiony człowiek, który nie idzie za radą występnych.", r: "Psalm 1, 1"},
+        {t: "Panie, Ty mnie badasz i znasz, Ty wiesz, kiedy siadam i wstaję.", r: "Psalm 139, 1"},
+        {t: "Dla Boga bowiem nie ma nic niemożliwego.", r: "Łukasza 1, 37"},
+        {t: "Nie bój się, bo Ja jestem z tobą, nie lękaj się, bo Ja jestem twoim Bogiem.", r: "Izajasza 41, 10"},
+        {t: "Pan jest mocą mojego życia, przed kim miałbym czuć trwogę?", r: "Psalm 27, 1"},
+        {t: "Twoje słowa stały się dla mnie rozkoszą i radością mojego serca.", r: "Jeremiasza 15, 16"},
+        {t: "Bóg jest dla nas ucieczką i siłą, najpewniejszą pomocą w trudnościach.", r: "Psalm 46, 2"},
+        {t: "Ja jestem drogą i prawdą, i życiem. Nikt nie przychodzi do Ojca inaczej jak tylko przeze Mnie.", r: "Jana 14, 6"},
+        {t: "U ludzi to niemożliwe, ale nie u Boga; bo u Boga wszystko jest możliwe.", r: "Marka 10, 27"},
+        {t: "Pan jest dobry, Jego łaska trwa na wieki, a Jego wierność przez pokolenia.", r: "Psalm 100, 5"},
+        {t: "Gdybym też miał dar prorokowania i znał wszystkie tajemnice, a miłości bym nie miał, byłbym niczym.", r: "1 Koryntian 13, 2"},
+        {t: "Nie daj się zwyciężyć złu, ale zło dobrem zwyciężaj.", r: "Rzymian 12, 21"},
+        {t: "Prawda was wyzwoli.", r: "Jana 8, 32"},
+        {t: "Serce radosne działa jak dobre lekarstwo.", r: "Przysłów 17, 22"},
+        {t: "Uważajcie, aby nikt nie odpłacał złem za złe, lecz zawsze usiłujcie czynić dobrze sobie nawzajem.", r: "1 Tesaloniczan 5, 15"},
+        {t: "Kto we Mnie wierzy, to chociażby umarł, żyć będzie.", r: "Jana 11, 25"},
+        {t: "Pokój zostawiam wam, pokój mój daję wam.", r: "Jana 14, 27"},
+        {t: "Lecz wy jesteście wybranym plemieniem, królewskim kapłaństwem, narodem świętym.", r: "1 Piotra 2, 9"},
+        {t: "Chrystus nas wyzwolił ku wolności.", r: "Galatów 5, 1"},
+        {t: "Ufaj Panu całym sercem, nie polegaj na własnym rozsądku.", r: "Przysłów 3, 5"},
+        {t: "Wielka jest łaskawość Jego nad nami, a wierność Pańska trwa na wieki.", r: "Psalm 117, 2"},
+        {t: "Szukajcie Pana, gdy się pozwala znaleźć, wzywajcie Go, dopóki jest blisko!", r: "Izajasza 55, 6"},
+        {t: "Owocem zaś Ducha jest: miłość, radość, pokój, cierpliwość, uprzejmość.", r: "Galatów 5, 22"},
+        {t: "Gdzie jest Duch Pański, tam wolność.", r: "2 Koryntian 3, 17"},
+        {t: "Nie troszczcie się więc zbytnio o jutro, bo jutrzejszy dzień sam o siebie troszczyć się będzie.", r: "Mateusza 6, 34"},
+        {t: "Wszystko, o co w modlitwie prosicie, stanie się wam, tylko wierzcie, że otrzymacie.", r: "Marka 11, 24"},
+        {t: "Ja przyszedłem po to, aby owce miały życie i miały je w obfitości.", r: "Jana 10, 10"},
+        {t: "Pan podtrzymuje wszystkich, którzy padają, i podnosi wszystkich pognębionych.", r: "Psalm 145, 14"},
+        {t: "Błogosławieni czystego serca, albowiem oni Boga oglądać będą.", r: "Mateusza 5, 8"},
+        {t: "Wiara jest poręką tych dóbr, których się spodziewamy.", r: "Hebrajczyków 11, 1"},
+        {t: "Bóg jest światłością i nie ma w Nim żadnej ciemności.", r: "1 Jana 1, 5"},
+        {t: "Wszystko, co czynicie, niech się dokonuje w miłości!", r: "1 Koryntian 16, 14"},
+        {t: "Kto nie miłuje, nie zna Boga, bo Bóg jest miłością.", r: "1 Jana 4, 8"},
+        {t: "Pan jest sędzią sprawiedliwym, Bogiem codziennie pałającym gniewem.", r: "Psalm 7, 12"},
+        {t: "Nie samym chlebem żyje człowiek, lecz każdym słowem, które pochodzi z ust Bożych.", r: "Mateusza 4, 4"},
+        {t: "W Nim bowiem żyjemy, poruszamy się i jesteśmy.", r: "Dzieje Apostolskie 17, 28"},
+        {t: "Moje owce słuchają mego głosu, a Ja znam je. Idą one za Mną.", r: "Jana 10, 27"},
+        {t: "Panie, Ty wszystko wiesz, Ty wiesz, że Cię kocham.", r: "Jana 21, 17"},
+        {t: "Wszystko, co chcecie, żeby wam ludzie czynili, i wy im czyńcie!", r: "Mateusza 7, 12"},
+        {t: "Bóg wybrał właśnie to, co głupie w oczach świata, aby zawstydzić mędrców.", r: "1 Koryntian 1, 27"},
+        {t: "Ja jestem krzewem winnym, wy - latoroślami. Kto trwa we Mnie, przynosi owoc obfity.", r: "Jana 15, 5"},
+        {t: "Nie bój się, tylko wierz!", r: "Marka 5, 36"},
+        {t: "Bóg zaś okazuje nam swoją miłość właśnie przez to, że Chrystus umarł za nas.", r: "Rzymian 5, 8"},
+        {t: "Jeśli Bóg z nami, któż przeciwko nam?", r: "Rzymian 8, 31"},
+        {t: "Uważajcie na samych siebie i na całe stado, nad którym Duch Święty ustanowił was stróżami.", r: "Dzieje Apostolskie 20, 28"},
+        {t: "Przygarnijcie siebie nawzajem, bo i Chrystus przygarnął was.", r: "Rzymian 15, 7"},
+        {t: "Weselcie się nadzieją! W ucisku bądźcie cierpliwi, w modlitwie - wytrwali!", r: "Rzymian 12, 12"},
+        {t: "Pan jest blisko wszystkich, którzy Go wzywają, wszystkich wzywających Go szczerze.", r: "Psalm 145, 18"},
+        {t: "W cierpliwości waszej posiądziecie dusze wasze.", r: "Łukasza 21, 19"},
+        {t: "A pokój Boży, który przewyższa wszelki umysł, będzie strzegł waszych serc.", r: "Filipian 4, 7"},
+        {t: "Każdy, kto wzywa imienia Pańskiego, będzie zbawiony.", r: "Rzymian 10, 13"},
+        {t: "Bóg sprzeciwia się pysznym, pokornym zaś daje łaskę.", r: "Jakuba 4, 6"},
+        {t: "Wysławiajcie Pana, bo jest dobry, bo łaska Jego trwa na wieki.", r: "Psalm 107, 1"},
+        {t: "Duch daje życie; ciało na nic się nie przyda.", r: "Jana 6, 63"},
+        {t: "Twoje słowo jest pochodnią dla moich stóp i światłem na mojej ścieżce.", r: "Psalm 119, 105"},
+        {t: "Gdzie są dwaj albo trzej zebrani w imię moje, tam jestem pośród nich.", r: "Mateusza 18, 20"},
+        {t: "Łaską bowiem jesteście zbawieni przez wiarę. A to pochodzi nie od was, lecz jest darem Boga.", r: "Efezjan 2, 8"},
+        {t: "Uczcie się od Mnie, bo jestem cichy i pokorny sercem, a znajdziecie ukojenie dla dusz waszych.", r: "Mateusza 11, 29"},
+        {t: "Nic nie zdoła nas odłączyć od miłości Boga, która jest w Chrystusie Jezusie.", r: "Rzymian 8, 39"},
+        {t: "Panie, do kogo pójdziemy? Ty masz słowa życia wiecznego.", r: "Jana 6, 68"},
+        {t: "Miłujmy się wzajemnie, ponieważ miłość jest z Boga.", r: "1 Jana 4, 7"},
+        {t: "Bóg moją mocą i pieśnią, On stał się moim zbawieniem.", r: "Wyjścia 15, 2"},
+        {t: "Chrystus w was - nadzieja chwały.", r: "Kolosan 1, 27"},
+        {t: "Wszystko mogę w Tym, który mnie umacnia.", r: "Filipian 4, 13"},
+        {t: "Kto trwa w miłości, trwa w Bogu, a Bóg trwa w nim.", r: "1 Jana 4, 16"},
+        {t: "Więcej szczęścia jest w dawaniu aniżeli w braniu.", r: "Dzieje Apostolskie 20, 35"},
+        {t: "Wiara zaś rodzi się z tego, co się słyszy, tym zaś, co się słyszy, jest słowo Chrystusa.", r: "Rzymian 10, 17"},
+        {t: "Łagodne serce jest życiem dla ciała.", r: "Przysłów 14, 30"},
+        {t: "Gdy serce nas oskarża, Bóg jest większy od naszego serca i zna wszystko.", r: "1 Jana 3, 20"},
+        {t: "Powierz Panu swoją drogę i zaufaj Mu: On sam będzie działał.", r: "Psalm 37, 5"},
+        {t: "Błogosławieni, którzy łakną i pragną sprawiedliwości, albowiem oni będą nasyceni.", r: "Mateusza 5, 6"},
+        {t: "Bóg jest wierny i nie pozwoli was kusić ponad to, co potraficie znieść.", r: "1 Koryntian 10, 13"},
+        {t: "Bóg, będąc bogaty w miłosierdzie, przez wielką swą miłość, jaką nas umiłował.", r: "Efezjan 2, 4"},
+        {t: "Oto stoję u drzwi i kołaczę.", r: "Apokalipsa 3, 20"},
+        {t: "Pan jest słońcem i tarczą, Pan hojnie darzy łaską i chwałą.", r: "Psalm 84, 12"},
+        {t: "Jeśli kto chce iść za Mną, niech się zaprze samego siebie, niech weźmie krzyż swój i niech Mnie naśladuje!", r: "Mateusza 16, 24"},
+        {t: "Miłość nigdy nie ustaje.", r: "1 Koryntian 13, 8"},
+        {t: "Wszystko jest możliwe dla tego, kto wierzy.", r: "Marka 9, 23"},
+        {t: "Pan cię będzie strzegł od zła wszelkiego: ustrzeże twoją duszę.", r: "Psalm 121, 7"},
+        {t: "Przyjdźcie do Mnie wszyscy, którzy utrudzeni i obciążeni jesteście, a Ja was pokrzepię.", r: "Mateusza 11, 28"},
+        {t: "Bóg nasz jest ogniem trawiącym.", r: "Hebrajczyków 12, 29"},
+        {t: "Miłujmy nie słowem i językiem, ale czynem i prawdą!", r: "1 Jana 3, 18"},
+        {t: "Pan światłem i zbawieniem moim: kogóż mam się lękać?", r: "Psalm 27, 1"},
+        {t: "Szukajcie wpierw Królestwa Bożego i jego sprawiedliwości.", r: "Mateusza 6, 33"},
+        {t: "Oto czynię wszystko nowe.", r: "Apokalipsa 21, 5"},
+        {t: "Wszystkie wasze troski przerzućcie na Niego, gdyż Jemu zależy na was.", r: "1 Piotra 5, 7"},
+        {t: "Jezus Chrystus wczoraj i dziś, ten sam także na wieki.", r: "Hebrajczyków 13, 8"},
+        {t: "Gdzie jest twój skarb, tam będzie i serce twoje.", r: "Mateusza 6, 21"},
+        {t: "A nadzieja zawieść nie może, ponieważ miłość Boża rozlana jest w sercach naszych.", r: "Rzymian 5, 5"},
+        {t: "Bóg kocha radosnego dawcę.", r: "2 Koryntian 9, 7"},
+        {t: "Wy jesteście światłością świata. Nie może się ukryć miasto położone na górze.", r: "Mateusza 5, 14"},
+        {t: "Smakujcie i zobaczcie, jak dobry jest Pan.", r: "Psalm 34, 9"},
+        {t: "Tyś jest mój Syn umiłowany, w Tobie mam upodobanie.", r: "Marka 1, 11"},
+        {t: "Pan jest łaskawy i miłosierny, cierpliwy i wielkiej dobroci.", r: "Psalm 145, 8"},
+        {t: "Albowiem tak Bóg umiłował świat, że Syna swego Jednorodzonego dał.", r: "Jana 3, 16"}
+        {t: "Pan jest moją siłą i tarczą, moje serce Mu zaufało.", r: "Psalm 28, 7"},
+        {t: "Dobre imię droższe niż wielkie bogactwo, a przychylność lepsza niż srebro i złoto.", r: "Przysłów 22, 1"},
+        {t: "Wszystko, co czynicie, niech się dokonuje w miłości!", r: "1 Koryntian 16, 14"},
+        {t: "Pan podtrzymuje wszystkich, którzy padają, i podnosi wszystkich pognębionych.", r: "Psalm 145, 14"},
+        {t: "Błogosławiony człowiek, który pokłada ufność w Panu, i Pan jest jego nadzieją.", r: "Jeremiasza 17, 7"},
+        {t: "Mądrość jest lepsza niż perły, a żadne klejnoty nie dorównają jej wartością.", r: "Przysłów 8, 11"},
+        {t: "Pan jest słońcem i tarczą, Pan hojnie darzy łaską i chwałą.", r: "Psalm 84, 12"},
+        {t: "Zatrzymajcie się i we Mnie uznajcie Boga.", r: "Psalm 46, 11"},
+        {t: "Serce radosne czyni twarz pogodną, a gdy smutek w sercu, duch przygnębiony.", r: "Przysłów 15, 13"},
+        {t: "Nie opuści cię Pan, Bóg twój, nie zostawi cię.", r: "Powtórzonego Prawa 31, 6"},
+        {t: "Pan jest sprawiedliwy na wszystkich swych drogach i łaskawy we wszystkich swoich dziełach.", r: "Psalm 145, 17"},
+        {t: "Lepsza jest kromka suchego chleba w spokoju, niż dom pełen biesiad kłótliwych.", r: "Przysłów 17, 1"},
+        {t: "Panie, Tyś jest moim Bogiem, wielbię Cię i wysławiam Twe imię.", r: "Izajasza 25, 1"},
+        {t: "Uczciwy żyć będzie dzięki swej wierności.", r: "Habakuka 2, 4"},
+        {t: "Pan oświetla moje ciemności.", r: "2 Samuela 22, 29"},
+        {t: "Wielka jest Twoja wierność, każdego poranka odnawia się Twoja łaska.", r: "Lamentacje 3, 23"},
+        {t: "Lecz wy, bracia, nie zniechęcajcie się w czynieniu dobrze.", r: "2 Tesaloniczan 3, 13"},
+        {t: "Pan jest blisko tych, którzy mają serce złamane.", r: "Psalm 34, 19"},
+        {t: "Miłość nie wyrządza zła bliźniemu, dlatego miłość jest doskonałym wypełnieniem Prawa.", r: "Rzymian 13, 10"},
+        {t: "Lepiej mało z bojaźnią Pańską, niż wielki skarb z niepokojem.", r: "Przysłów 15, 16"},
+        {t: "Pan podtrzymuje moją duszę.", r: "Psalm 54, 6"},
+        {t: "Kto idzie za sprawiedliwością i miłością, znajdzie życie, powodzenie i chwałę.", r: "Przysłów 21, 21"},
+        {t: "W Tobie, Panie, zaufałem, nie zawstydzę się na wieki.", r: "Psalm 31, 2"},
+        {t: "Pan jest moim światłem i moim zbawieniem.", r: "Psalm 27, 1"},
+        {t: "Zaufaj Panu z całego serca, a On sam będzie prostował twoje ścieżki.", r: "Przysłów 3, 5"},
+        {t: "Pan jest dobry, jest twierdzą w dniu niedoli.", r: "Nahuma 1, 7"},
+        {t: "Bóg jest naszą ucieczką i siłą.", r: "Psalm 46, 2"},
+        {t: "Nie bądź mądry we własnych oczach, bój się Pana i unikaj zła.", r: "Przysłów 3, 7"},
+        {t: "Twoja łaska jest lepsza niż życie.", r: "Psalm 63, 4"},
+        {t: "Pan da siłę swojemu ludowi.", r: "Psalm 29, 11"},
+        {t: "Kto dba o usta i język, ten chroni się przed nieszczęściem.", r: "Przysłów 21, 23"},
+        {t: "Pan jest pasterzem moim, nie brak mi niczego.", r: "Psalm 23, 1"},
+        {t: "Bóg mój jest moją skalą, na której się chronię.", r: "Psalm 18, 3"},
+        {t: "Przyjaciel kocha w każdym czasie.", r: "Przysłów 17, 17"},
+        {t: "Wszystko czyńcie bez narzekania i powątpiewania.", r: "Filipian 2, 14"},
+        {t: "Pan jest blisko wszystkich, którzy Go wzywają.", r: "Psalm 145, 18"},
+        {t: "Lecz moja łaska wystarczy ci, moc bowiem w słabości się doskonali.", r: "2 Koryntian 12, 9"},
+        {t: "Kto sieje sprawiedliwość, ma pewną nagrodę.", r: "Przysłów 11, 18"},
+        {t: "Pokój mój daję wam, nie jak daje świat, Ja wam daję.", r: "Jana 14, 27"},
+        {t: "Pan cię strzeże, Pan jest twoim cieniem przy twojej prawej ręce.", r: "Psalm 121, 5"},
+        {t: "Miłe słowa są jak plastry miodu, słodyczą dla duszy i lekiem dla ciała.", r: "Przysłów 16, 24"},
+        {t: "Pan uwalnia uwięzionych, Pan otwiera oczy niewidomym.", r: "Psalm 146, 7"},
+        {t: "Jeśli kto chce być pierwszym, niech będzie ostatnim ze wszystkich i sługą wszystkich.", r: "Marka 9, 35"},
+        {t: "Kto ufa swemu bogactwu - upadnie, a sprawiedliwi rozkwitną jak liście.", r: "Przysłów 11, 28"},
+        {t: "Bóg nie posłał swego Syna, aby świat potępił, ale by świat został zbawiony.", r: "Jana 3, 17"},
+        {t: "Pan jest sędzią sprawiedliwym.", r: "Psalm 7, 12"},
+        {t: "Człowiek miłosierny dobrze czyni sobie samemu.", r: "Przysłów 11, 17"},
+        {t: "Mamy rzecznika u Ojca - Jezusa Chrystusa sprawiedliwego.", r: "1 Jana 2, 1"},
+        {t: "Wysławiajcie Pana, bo jest dobry, bo łaska Jego trwa na wieki.", r: "Psalm 136, 1"},
+        {t: "Początkiem mądrości jest bojaźń Pańska.", r: "Przysłów 1, 7"},
+        {t: "Bóg zaś okazuje nam swoją miłość przez to, że Chrystus umarł za nas.", r: "Rzymian 5, 8"},
+        {t: "Spójrzcie na Pana i Jego potęgę, szukajcie zawsze Jego oblicza.", r: "Psalm 105, 4"},
+        {t: "Lepszy jest suchy kęs w spokoju, niż dom pełen sporów.", r: "Przysłów 17, 1"},
+        {t: "Cierpliwość zaś niech prowadzi do dzieła doskonałego.", r: "Jakuba 1, 4"},
+        {t: "Pan jest mocą moją i pieśnią, On stał się moim zbawieniem.", r: "Wyjścia 15, 2"},
+        {t: "Dobra nowina z dalekiego kraju jest jak zimna woda dla spragnionego.", r: "Przysłów 25, 25"},
+        {t: "W Bogu pokładam nadzieję, nie będę się lękał.", r: "Psalm 56, 12"},
+        {t: "Bóg kocha radosnego dawcę.", r: "2 Koryntian 9, 7"},
+        {t: "Serce człowieka obmyśla drogi, ale Pan kieruje jego krokami.", r: "Przysłów 16, 9"},
+        {t: "Wy zaś, bracia, nie ustajcie w czynieniu dobra.", r: "2 Tesaloniczan 3, 13"},
+        {t: "Pan podtrzymuje tych, którzy Go miłują.", r: "Psalm 145, 20"},
+        {t: "Kto znajduje mądrość, znajduje życie i uzyskuje łaskę u Pana.", r: "Przysłów 8, 35"},
+        {t: "Nie troszczcie się o nic, ale w każdej modlitwie przedstawiajcie prośby Bogu.", r: "Filipian 4, 6"},
+        {t: "Prowadź mnie, Panie, ścieżką Twych przykazań.", r: "Psalm 119, 35"},
+        {t: "Łagodna odpowiedź uśmierza gniew.", r: "Przysłów 15, 1"},
+        {t: "Gdzie są dwaj lub trzej zebrani w imię moje, tam jestem pośród nich.", r: "Mateusza 18, 20"},
+        {t: "Bóg jest naszym schronieniem.", r: "Psalm 62, 9"},
+        {t: "Lepsza jest mądrość niż złoto, a rozum cenniejszy niż srebro.", r: "Przysłów 16, 16"},
+        {t: "W Nim bowiem żyjemy, poruszamy się i jesteśmy.", r: "Dzieje Apostolskie 17, 28"},
+        {t: "Pan jest moim pasterzem.", r: "Psalm 23, 1"},
+        {t: "Słowo Pana trwa na wieki.", r: "1 Piotra 1, 25"},
+        {t: "Kto idzie w prawości, idzie bezpiecznie.", r: "Przysłów 10, 9"},
+        {t: "Daj mi poznać drogi Twoje, Panie.", r: "Psalm 25, 4"},
+        {t: "Bóg jest miłością.", r: "1 Jana 4, 8"},
+        {t: "Przed porażką idzie pycha, a przed upadkiem wyniosły duch.", r: "Przysłów 16, 18"},
+        {t: "Pan jest tarczą dla tych, którzy Mu ufają.", r: "Psalm 18, 31"},
+        {t: "Bóg nie jest Bogiem nieładu, lecz pokoju.", r: "1 Koryntian 14, 33"},
+        {t: "Lepszy jest biedny, co żyje uczciwie, niż bogacz o drogach krętych.", r: "Przysłów 28, 6"},
+        {t: "Pan jest mocą swojego ludu.", r: "Psalm 28, 8"},
+        {t: "Owocem Ducha jest radość i pokój.", r: "Galatów 5, 22"},
+        {t: "Gdy serce radosne, twarz się rozjaśnia.", r: "Przysłów 15, 13"},
+        {t: "Pan cię strzec będzie od zła wszelkiego.", r: "Psalm 121, 7"},
+        {t: "Bądźcie dla siebie nawzajem uprzejmi.", r: "Efezjan 4, 32"},
+        {t: "Usta sprawiedliwego są źródłem życia.", r: "Przysłów 10, 11"},
+        {t: "Pan jest sędzią narodów.", r: "Psalm 7, 9"},
+        {t: "Miłość nigdy nie ustaje.", r: "1 Koryntian 13, 8"},
+        {t: "Prawdziwy przyjaciel kocha zawsze.", r: "Przysłów 17, 17"},
+        {t: "Bóg daje moc zmęczonemu.", r: "Izajasza 40, 29"},
+        {t: "Pan jest sprawiedliwy.", r: "Psalm 11, 7"},
+        {t: "Kto ma mądre serce, ten dąży do wiedzy.", r: "Przysłów 15, 14"},
+        {t: "Wszystko czyńcie na chwałę Bożą.", r: "1 Koryntian 10, 31"},
+        {t: "Bóg jest naszym światłem.", r: "Psalm 27, 1"},
+        {t: "Nadzieja pokornych nie zginie.", r: "Psalm 9, 19"},
+        {t: "Kto postępuje nienagannie, ten będzie ocalony.", r: "Przysłów 28, 18"},
+        {t: "Pan jest ucieczką dla ubogich.", r: "Psalm 9, 10"},
+        {t: "Bóg daje łaskę pokornym.", r: "Jakuba 4, 6"},
+        {t: "Wielka jest moc modlitwy.", r: "Jakuba 5, 16"},
+        {t: "Pan jest blisko.", r: "Filipian 4, 5"},
+        {t: "Bóg jest dobry.", r: "Psalm 34, 9"},
+        {t: "Ufaj Panu na wieki.", r: "Izajasza 26, 4"}
