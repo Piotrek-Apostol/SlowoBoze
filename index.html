@@ -23,9 +23,7 @@
     <div id="v-ref"></div>
     <button id="btn" onclick="losuj()">Odbierz Słowo na dziś</button>
     <div id="info" class="info">To jest Twoje Słowo na dzisiaj. Zapraszam jutro!</div>
-    <div style="margin-top: 20px;">
-    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://piotrek-apostol.github.io/SlowoBoze/&count_bg=%23D4AF37&title_bg=%238B4513&icon=&icon_color=%23E7E7E7&title=Odwiedziny&edge_flat=false" alt="Licznik"/>
-</div>
+    
 </div>
 
 <script>
@@ -718,23 +716,31 @@
     ];
 
     function losuj() {
-        const d = new Date().toDateString();
+        const d = new Date().toDateString(); 
         const w = baza[Math.floor(Math.random() * baza.length)];
-        localStorage.setItem('bible_day', d);
-        localStorage.setItem('bible_val', JSON.stringify(w));
+        
+        localStorage.setItem('blokada_v1', d);
+        localStorage.setItem('tresc_v1', JSON.stringify(w));
+        
         wyswietl(w);
     }
 
     function wyswietl(w) {
         document.getElementById('v-text').innerText = "„" + w.t + "”";
         document.getElementById('v-ref').innerText = w.r;
-        document.getElementById('btn').style.display = 'none';
-        document.getElementById('info').style.display = 'block';
+        document.getElementById('btn').style.display = 'none'; 
+        document.getElementById('info').style.display = 'block'; 
     }
 
     window.onload = function() {
-        if (localStorage.getItem('bible_day') === new Date().toDateString()) {
-            wyswietl(JSON.parse(localStorage.getItem('bible_val')));
+        const dzis = new Date().toDateString();
+        const zapisanaData = localStorage.getItem('blokada_v1');
+
+        if (zapisanaData === dzis) {
+            const zapisanyWerset = localStorage.getItem('tresc_v1');
+            if (zapisanyWerset) {
+                wyswietl(JSON.parse(zapisanyWerset));
+            }
         }
     };
 </script>
