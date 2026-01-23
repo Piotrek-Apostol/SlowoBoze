@@ -83,28 +83,25 @@
         text-shadow: 0 0 10px rgba(212, 175, 55, 0.8); /* Złota poświata wokół napisu */
         border-top: 1px solid rgba(212, 175, 55, 0.3); /* Delikatna linia oddzielająca */
         padding-top: 15px;
-    .header-container {
+   .header-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 15px; /* Odstęp między obrazkami a krzyżem */
-        margin-bottom: 10px;
+        gap: 10px; /* Mniejszy odstęp */
+        margin-bottom: 5px;
     }
 
     .side-img {
-        width: 80px; /* Rozmiar obrazków */
+        width: 50px; /* Znacznie mniejszy rozmiar, by pasował do krzyża */
         height: auto;
-        filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5)); /* Złota poświata wokół Jezusa */
-        opacity: 0.9;
+        filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
+        opacity: 0.8;
     }
 
-    /* Dopasowanie dla telefonów, żeby obrazki nie były za duże */
+    /* Na bardzo małe ekrany jeszcze bardziej je zmniejszamy */
     @media (max-width: 400px) {
         .side-img {
-            width: 50px;
-        }
-        .header-container {
-            gap: 5px;
+            width: 35px;
         }
     }
 </style>
