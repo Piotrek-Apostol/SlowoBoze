@@ -76,34 +76,20 @@
         font-weight: bold;
         letter-spacing: 1px;
     .tomorrow-info {
-    margin-top: 20px;
-    /* Ustawiamy tę samą czcionkę co w reszcie strony */
-    font-family: sans-serif; 
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #ffffff;
-    display: block;
-    text-transform: none;
+    margin-top: 25px !important;
+    font-family: sans-serif !important; 
+    font-size: 1.3rem !important; /* Jeszcze trochę większy */
+    font-weight: 900 !important;  /* Maksymalnie gruby */
+    color: #ffffff !important;
+    display: block !important;
+    opacity: 1 !important;
+    text-align: center !important;
     
-    /* Efekt świecenia (poświata złoto-biała) */
+    /* Bardzo mocne świecenie */
     text-shadow: 
-        0 0 5px #fff, 
-        0 0 10px #fff, 
-        0 0 20px #d4af37, 
-        0 0 30px #d4af37;
-        
-    /* Opcjonalnie: lekkie pulsowanie, żeby "żyło" */
-    animation: glow 2s ease-in-out infinite alternate;
-}
-
-/* Dodatkowy efekt pulsowania blasku */
-@keyframes glow {
-    from {
-        text-shadow: 0 0 5px #fff, 0 0 10px #d4af37;
-    }
-    to {
-        text-shadow: 0 0 10px #fff, 0 0 20px #d4af37, 0 0 30px #d4af37;
-    }
+        0 0 8px #ffffff, 
+        0 0 15px #d4af37, 
+        0 0 25px #d4af37 !important;
 }
 </style>
 
